@@ -1,4 +1,4 @@
-- [Get Started](get-started.md)
+- [Getting started](quickstart.md)
 - Examples
   - [Column Charts](examples/column.md)
   - [Line Charts](examples/line.md)

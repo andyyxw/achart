@@ -1,3 +1,5 @@
+# Quick start
+
 ## Install
 
 ```bash
