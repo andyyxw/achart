@@ -1,1 +1,28 @@
-## 饼图
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>饼图</title>
+  <link rel="stylesheet" href="./demo.css">
+</head>
+<body>
+<canvas id="container" width="1400" height="700"></canvas>
+<script type="module" />
+  import { PieChart } from '../index.js'
+  const data = [
+    { name: '芳华', value: 40 }, 
+    { name: '妖猫传', value: 20 }, 
+    { name: '机器之血', value: 18 }, 
+    { name: '心理罪', value: 15 }, 
+    { name: '寻梦环游记', value: 5 }, 
+    { name: '其他', value: 2 },
+  ]
+  const chart = new PieChart({
+    id: 'container',
+    data,
+    position: 'name*value'
+  })
+  chart.render()
+</script>
+</body>
+</html>

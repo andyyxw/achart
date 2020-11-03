@@ -181,15 +181,6 @@ class CurveChart {
     return chartZone[3] - (chartZone[3] - chartZone[1]) * (yValue - yMin) / (yMax - yMin)
   }
 
-  /**
-   * 根据canvas坐标系y坐标获取可视坐标系y坐标
-   * 数学公式转换
-   */
-  transYCoordToYValue (yCoord) {
-    const { chartZone, yMin, yMax } = this.options
-    return ((yMax - yMin) * (chartZone[3] - yCoord) / (chartZone[3] - chartZone[1]) + yMin).toFixed(2)
-  }
-
   render () {
     this.drawAxis()
     this.drawYLabels()

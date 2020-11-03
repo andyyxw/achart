@@ -170,31 +170,6 @@ class LineChart {
     return chartZone[3] - (chartZone[3] - chartZone[1]) * (yValue - yMin) / (yMax - yMin)
   }
 
-  /**
-   * 根据canvas坐标系y坐标获取可视坐标系y坐标
-   * 数学公式转换
-   */
-  transYCoordToYValue (yCoord) {
-    const { chartZone, yMin, yMax } = this.options
-    return ((yMax - yMin) * (chartZone[3] - yCoord) / (chartZone[3] - chartZone[1]) + yMin).toFixed(2)
-  }
-
-  /**
-   * 根据canvas坐标系x坐标获取可视坐标系x坐标
-   * 数学公式转换
-   */
-  transXCoordToXValue (xCoord) {
-    const { chartZone, xAxisLabel } = this.options
-    const labels = xAxisLabel
-    const xLength = chartZone[2] - chartZone[0]
-    const gap = xLength / labels.length // 坐标点之间的间隔
-    const index = Math.round((xCoord - chartZone[0]) / gap)
-    return {
-      index,
-      value: labels[index]
-    }
-  }
-
   render () {
     this.drawAxis()
     this.drawYLabels()

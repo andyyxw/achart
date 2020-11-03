@@ -29,13 +29,13 @@ class ColumnChart {
       max = Math.max(max, value)
     })
 
-    const yGap = Math.round(max / (5 - 1) / 10) * 10
-    const yAxisLabel = [...Array(5)].map((_, index) => (index * yGap))
+    const yCountGap = Math.round(max / (5 - 1) / 10) * 10
+    const yAxisLabel = [...Array(5)].map((_, index) => (index * yCountGap))
     this.options = {
-      yValues: values,
+      datas: values,
       chartZone,
-      xAxisLabel, // y轴坐标
-      yAxisLabel, // x轴坐标
+      xAxisLabel, // y轴坐标刻度
+      yAxisLabel, // x轴坐标刻度
       yMax: yAxisLabel[yAxisLabel.length - 1],
       yMin: yAxisLabel[0]
     }
@@ -109,10 +109,10 @@ class ColumnChart {
    * 绘制数据
    */
   drawData () {
-    const { yValues, chartZone, xAxisLabel } = this.options
+    const { datas, chartZone, xAxisLabel } = this.options
     const gap = (chartZone[2] - chartZone[0]) / (xAxisLabel.length * 2) // x轴坐标点间隔单元
 
-    yValues.forEach((val, index) => {
+    datas.forEach((val, index) => {
       // 获取绘图颜色
       const color = '#008DFB'
       this.ctx.fillStyle = color
@@ -136,15 +136,6 @@ class ColumnChart {
   transYValueToYCoord (yValue) {
     const { chartZone, yMin, yMax } = this.options
     return chartZone[3] - (chartZone[3] - chartZone[1]) * (yValue - yMin) / (yMax - yMin)
-  }
-
-  /**
-   * 根据canvas坐标系y坐标获取可视坐标系y坐标
-   * 数学公式转换
-   */
-  transYCoordToYValue (yCoord) {
-    const { chartZone, yMin, yMax } = this.options
-    return ((yMax - yMin) * (chartZone[3] - yCoord) / (chartZone[3] - chartZone[1]) + yMin).toFixed(2)
   }
 
   render () {
