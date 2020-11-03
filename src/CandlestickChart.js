@@ -1,13 +1,13 @@
-import makeHighRes from './utils/makeHighRes.js'
-
 /**
  * 蜡烛图
  */
+import makeHighRes from './utils/makeHighRes.js'
+
 class CandlestickChart {
   constructor (config) {
     this.config = config
     this.makeUILayer()
-    this.ctx = makeHighRes(config.id)
+    this.ctx = makeHighRes(document.getElementById(config.id))
     const statistics = this.splitData()
     // 基本绘图配置
     const options = {
@@ -19,8 +19,6 @@ class CandlestickChart {
     options.yMax = Number(options.yAxisLabel[options.yAxisLabel.length - 1])
     options.yMin = Number(options.yAxisLabel[0])
     this.options = options
-
-    this.render()
   }
 
   /**
@@ -102,16 +100,16 @@ class CandlestickChart {
    * 设置UI层
    */
   makeUILayer () {
-    const { id } = this.config
-    const width = id.width
-    const height = id.height
-    const styles = getComputedStyle(id, null)
+    const $id = document.getElementById(this.config.id)
+    const width = $id.width
+    const height = $id.height
+    const styles = getComputedStyle($id, null)
     const ui = document.createElement('canvas')
     ui.id = 'ui-layer'
     ui.style.zIndex = Number(styles.zIndex) + 1
     ui.width = width
     ui.height = height
-    document.body.insertBefore(ui, id)
+    document.body.insertBefore(ui, $id)
     this.ui = ui
     this.uiCtx = makeHighRes(ui)
 

@@ -35,13 +35,9 @@
     sales: 38
   }]
   const chart = new ColumnChart({
-    id: document.getElementById('container'),
+    id: 'container',
     data,
-    config: {
-      sales: {
-        tickCount: 5
-      }
-    }
+    position: 'year*sales'
   })
   chart.render()
 </script>

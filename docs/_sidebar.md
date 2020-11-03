@@ -1,5 +1,5 @@
 - [Getting started](quickstart.md)
-- Examples
+- API
   - [Column Charts](examples/column.md)
   - [Line Charts](examples/line.md)
   - [Curve Charts](examples/curve.md)
