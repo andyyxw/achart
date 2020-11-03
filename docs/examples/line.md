@@ -40,4 +40,4 @@ const chart = new LineChart({
 chart.render()
 ```
 
-### [在线示例](https://andy.city/ycharts/demos/ColumnChart.html)
+### [在线示例](https://andy.city/ycharts/demos/LineChart.html)
