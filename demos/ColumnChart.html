@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>柱状图</title>
+  <link rel="stylesheet" href="./demo.css">
+</head>
+<body>
+<canvas id="container" width="1400" height="700"></canvas>
+<script type="module" />
+  import { ColumnChart } from '../index.js'
+  const data = [{
+    year: '1951 年',
+    sales: 38
+  }, {
+    year: '1952 年',
+    sales: 52
+  }, {
+    year: '1956 年',
+    sales: 61
+  }, {
+    year: '1957 年',
+    sales: 145
+  }, {
+    year: '1958 年',
+    sales: 48
+  }, {
+    year: '1959 年',
+    sales: 38
+  }, {
+    year: '1960 年',
+    sales: 38
+  }, {
+    year: '1962 年',
+    sales: 38
+  }]
+  const chart = new ColumnChart({
+    id: document.getElementById('container'),
+    data,
+    config: {
+      sales: {
+        tickCount: 5
+      }
+    }
+  })
+  chart.render()
+</script>
+</body>
+</html>
