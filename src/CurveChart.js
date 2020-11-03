@@ -1,9 +1,10 @@
 /**
- * 柱状图
+ * 曲线图
  */
 import makeHighRes from './utils/makeHighRes.js'
+import GetRandomColor from './utils/getRandomColor.js'
 
-class ColumnChart {
+class CurveChart {
   constructor (config) {
     this.config = config
     this.handleData()
@@ -19,25 +20,43 @@ class ColumnChart {
     const { width, height } = document.getElementById(id)
 
     const chartZone = [50, 50, width - 50, height - 50] // 坐标系的区域（分别是左上角和右下角两点的坐标）
-    const values = []
     const xAxisLabel = []
     let max = 0
+    const types = []
+    const datas = []
+
     data.forEach((item) => {
+      const xLabel = item[posArr[0]]
       const value = item[posArr[1]]
-      xAxisLabel.push(item[posArr[0]])
-      values.push(value)
+      const type = item.type
+      if (!types.includes(type)) {
+        types.push(type)
+      }
+      const payload = { type, value }
+      const xLabelIndex = xAxisLabel.indexOf(xLabel)
+      if (xAxisLabel.includes(xLabel)) {
+        datas[xLabelIndex].values.push(payload)
+      } else {
+        xAxisLabel.push(xLabel)
+        datas.push({
+          label: xLabel,
+          values: [payload]
+        })
+      }
       max = Math.max(max, value)
     })
 
     const yGap = Math.round(max / (5 - 1) / 10) * 10
     const yAxisLabel = [...Array(5)].map((_, index) => (index * yGap))
     this.options = {
-      yValues: values,
+      datas,
       chartZone,
-      xAxisLabel, // y轴坐标
-      yAxisLabel, // x轴坐标
+      xAxisLabel, // y轴坐标点
+      yAxisLabel, // x轴坐标点
       yMax: yAxisLabel[yAxisLabel.length - 1],
-      yMin: yAxisLabel[0]
+      yMin: yAxisLabel[0],
+      colors: new GetRandomColor(Math.max(1, types.filter(Boolean).length)),
+      types
     }
   }
 
@@ -89,19 +108,22 @@ class ColumnChart {
    */
   drawXLabels () {
     const { xAxisLabel, chartZone } = this.options
-    const gap = (chartZone[2] - chartZone[0]) / (xAxisLabel.length * 2) // x轴坐标点间隔单元
+    const gap = (chartZone[2] - chartZone[0]) / xAxisLabel.length // x轴坐标点间隔单元
 
     xAxisLabel.forEach((label, index) => {
-      const activeX = chartZone[0] + (1 + index * 2) * gap
-      this.ctx.fillStyle = '#353535'
-      this.ctx.textAlign = 'center'
-      this.ctx.fillText(label, activeX, chartZone[3] + 16)
-      // 绘制小间隔
-      // this.ctx.beginPath()
-      // this.ctx.strokeStyle = '#353535'
-      // this.ctx.moveTo(width, chartZone[3])
-      // this.ctx.lineTo(width, chartZone[3] + 5)
-      // this.ctx.stroke()
+      const activeX = chartZone[0] + (index + 1) * gap
+      if ([0, Math.floor(xAxisLabel.length / 2), xAxisLabel.length - 1].includes(index)) {
+        // 绘制文字
+        this.ctx.strokeStyle = '#eaeaea'
+        this.ctx.textAlign = 'center'
+        this.ctx.fillText(label, activeX, chartZone[3] + 16)
+        // 绘制小间隔
+        this.ctx.beginPath()
+        this.ctx.strokeStyle = '#353535'
+        this.ctx.moveTo(activeX, chartZone[3])
+        this.ctx.lineTo(activeX, chartZone[3] + 5)
+        this.ctx.stroke()
+      }
     })
   }
 
@@ -109,24 +131,45 @@ class ColumnChart {
    * 绘制数据
    */
   drawData () {
-    const { yValues, chartZone, xAxisLabel } = this.options
-    const gap = (chartZone[2] - chartZone[0]) / (xAxisLabel.length * 2) // x轴坐标点间隔单元
+    const { datas, chartZone, xAxisLabel, colors, types } = this.options
+    const gap = (chartZone[2] - chartZone[0]) / xAxisLabel.length // x轴坐标点间隔单元
+    let lastPoints = [] // 缓存上一条线的终点
 
-    yValues.forEach((val, index) => {
-      // 获取绘图颜色
-      const color = '#008DFB'
-      this.ctx.fillStyle = color
-      // 计算绘制中心点x坐标
-      const activeX = chartZone[0] + (1 + index * 2) * gap
-      const yCoord = this.transYValueToYCoord(val)
+    let index = 0
+    const step = () => {
+      const activeX = chartZone[0] + (index + 1) * gap
+      const item = datas[index]
+      const nextItem = datas[index + 1] || item
+      const nextX = chartZone[0] + Math.min(datas.length, index + 1 + 1) * gap
+      const endPoints = []
+      item.values.forEach((it, index2) => {
+        const y = this.transYValueToYCoord(it.value)
+        const nextY = this.transYValueToYCoord(nextItem.values[index2].value)
+        const ctrlPoint = [activeX, y] // 当前数据点为本条线的控制点
+        // 计算每段曲线终点
+        let endPoint = [(activeX + nextX) / 2, (y + nextY) / 2] // 取两个数据点的中点
+        endPoint = [(endPoint[0] + nextX) / 2, (endPoint[1] + nextY) / 2] // 调整终点 提高精确度
+        const startPoint = lastPoints[index2] || endPoint
 
-      // 绘制矩形
-      this.ctx.fillRect(activeX - gap / 2, yCoord, gap, chartZone[3] - yCoord)
+        this.ctx.beginPath()
+        this.ctx.strokeStyle = colors[item.values.length ? types.indexOf(it.type) : 0]
+        this.ctx.moveTo(...startPoint)
+        this.ctx.quadraticCurveTo(
+          ...ctrlPoint,
+          ...endPoint
+        )
+        this.ctx.stroke()
+        endPoints.push(endPoint)
+      })
+      lastPoints = endPoints
 
-      this.ctx.fillStyle = '#353535'
-      this.ctx.textAlign = 'center'
-      this.ctx.fillText(val, activeX, yCoord - 6)
-    })
+      if (index < datas.length - 1) {
+        index++
+        requestAnimationFrame(step)
+      }
+    }
+
+    step()
   }
 
   /**
@@ -155,4 +198,4 @@ class ColumnChart {
   }
 }
 
-export default ColumnChart
+export default CurveChart

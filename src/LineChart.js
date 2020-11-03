@@ -135,7 +135,7 @@ class LineChart {
     const gap = (chartZone[2] - chartZone[0]) / xAxisLabel.length // x轴坐标点间隔单元
     let lastPoints = [] // 缓存上一条线的终点
 
-    let index = 0
+    let index = 1
     const step = () => {
       const activeX = chartZone[0] + (index + 1) * gap
       const item = datas[index]

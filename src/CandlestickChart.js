@@ -250,7 +250,7 @@ class CandlestickChart {
 
     // 绘制曲线图
     // drawCurve(openingPriceCoords, '#f9bb2d') // 开盘价曲线图
-    this.drawCurve(closingPriceCoords, 'blue') // 收盘价曲线图
+    // this.drawCurve(closingPriceCoords, 'blue') // 收盘价曲线图
   }
 
   /**
